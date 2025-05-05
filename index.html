@@ -155,8 +155,29 @@
             ctx.moveTo(x.getPixelForValue(new Date()), top);
             ctx.lineTo(x.getPixelForValue(new Date()), bottom);
             ctx.stroke();
+            ctx.restore();
 
             ctx.setLineDash([]);
+
+            // Draw the pointing down arrow
+            ctx.beginPath();
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(102, 102, 102, 1)';
+            ctx.moveTo(x.getPixelForValue(new Date()), top + 1);
+            ctx.lineTo(x.getPixelForValue(new Date()) - 4, top - 6);
+            ctx.lineTo(x.getPixelForValue(new Date()) + 4, top - 6);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(102, 102, 102, 1)';
+            ctx.stroke();
+            ctx.fill();
+            ctx.restore();
+
+            // Text at the bottom dotted line
+            ctx.font = 'bolder 12px sans-serif';
+            ctx.fillStyle = 'rgba(102, 102, 102, 1)';
+            ctx.textAlign = 'center';
+            ctx.fillText('Today', x.getPixelForValue(new Date()), bottom + 13);
+            ctx.restore();
         }
     }
 
@@ -169,12 +190,13 @@
             ctx.save();
             ctx.font = 'bolder 12px sans-serif';
             ctx.fillStyle = 'black';
-            ctx.textBaseline = 'middle';
+            ctx.textBaseline = 'center';
+            ctx.textAlign = 'left';
 
             data.datasets[0].data.forEach((datapoint, index) => {
                 ctx.fillText(datapoint.name, 10, y.getPixelForValue(index))
             })
-            ctx.fillText('Names', 10, top - 19)
+            ctx.fillText('Names', 10, top - 15)
             ctx.restore()
         }
     }
@@ -188,6 +210,7 @@
                 padding: {
                     left: 100,
                     right: 100,
+                    bottom: 20,
                 }
             },
             indexAxis: 'y',
