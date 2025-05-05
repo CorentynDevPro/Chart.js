@@ -136,10 +136,8 @@
             })
             ctx.font = 'bolder 12px sans-serif';
             ctx.fillStyle = 'black';
-            ctx.fillText('Status', right + (paddingRight / 2), top - 30)
+            ctx.fillText('Status', right + (paddingRight / 2), top - 19)
             ctx.restore()
-
-            console.log(options.layout.padding.right);
         }
     }
 
@@ -176,7 +174,7 @@
             data.datasets[0].data.forEach((datapoint, index) => {
                 ctx.fillText(datapoint.name, 10, y.getPixelForValue(index))
             })
-            ctx.fillText('Names', 10, top - 30)
+            ctx.fillText('Names', 10, top - 19)
             ctx.restore()
         }
     }
@@ -198,7 +196,10 @@
                     position: 'top',
                     type: 'time',
                     time: {
-                        unit: 'day'
+                        //unit: 'day'
+                        displayFormats: {
+                            day: 'd',
+                        }
                     },
                     min: '2025-05-01',
                     max: '2025-05-31',
@@ -207,6 +208,26 @@
             plugins: {
                 legend: {
                     display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        title: (ctx) => {
+                            const startDate = new Date(ctx[0].raw.x[0])
+                            const endDate = new Date(ctx[0].raw.x[1])
+                            const assigneeName = ctx[0].raw.name;
+                            const formattedStartDate = startDate.toLocaleDateString([], {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                            });
+                            const formattedEndDate = endDate.toLocaleDateString([], {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                            });
+                            return ['Task deadline: ' + formattedStartDate + ' - ' + formattedEndDate, 'Assignee: ' + assigneeName];
+                        }
+                    }
                 }
             }
         },
