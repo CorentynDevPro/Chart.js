@@ -58,13 +58,16 @@
         <input type="text" id="nameTask"/>
         <input type="date" id="startDateTask"/>
         <input type="date" id="endDateTask"/>
-        <input type="text" id="teamMemberTask"/>
+        <input type="text" id="teamMemberTask" list="names"/>
+        <datalist id="names">
+        </datalist>
+
         <select type="text" id="statusTask">
             <option value="0">Delayed</option>
             <option value="1">Pending</option>
             <option value="2">Completed</option>
         </select>
-        <button onclick="addTask()">Submit</button>
+        <button onclick="addTask()">Create task</button>
     </div>
 </div>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
@@ -333,9 +336,30 @@
             x: [startDateTask.value, endDateTask.value],
             y: nameTask.value, name: teamMemberTask.value, status: parseInt(statusTask.value)
         };
+        addNames();
         myChart.update();
     }
 
+    function addNames() {
+        const names = document.getElementById('names');
+        while(names.firstElementChild) {
+            names.removeChild(names.firstElementChild);
+        };
+
+        const namesArray = myChart.data.datasets[0].data.map((dataPoint) => {
+            return dataPoint.name;
+        })
+
+        const namesArrayFiltered = [...new Set(namesArray)];
+
+        namesArrayFiltered.forEach((memberName) => {
+            const option = document.createElement('option');
+            option.value = memberName;
+            names.appendChild(option);
+        })
+    };
+
+    addNames();
     // Instantly assign Chart.js version
     const chartVersion = document.getElementById('chartVersion');
     chartVersion.innerText = Chart.version;
