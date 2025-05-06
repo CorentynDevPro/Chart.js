@@ -11,21 +11,9 @@
             font-family: sans-serif;
         }
 
-        .chartMenu {
-            width: 100vw;
-            height: 40px;
-            background: #1A1A1A;
-            color: rgba(54, 162, 235, 1);
-        }
-
-        .chartMenu p {
-            padding: 10px;
-            font-size: 20px;
-        }
-
         .chartCard {
             width: 100vw;
-            height: calc(100vh - 40px);
+            height: calc(100vh);
             background: rgba(54, 162, 235, 0.2);
             display: flex;
             align-items: center;
@@ -45,7 +33,6 @@
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
 </head>
 <body>
-<div class="chartMenu">
 </div>
 <div class="chartCard">
     <div class="chartBox">
@@ -238,6 +225,24 @@
         }
     }
 
+    // weekend plugin block
+    const weekend = {
+        id: 'weekend',
+        beforeDatasetsDraw(chart, args, pluginOptions) {
+            const {ctx, chartArea: {top, bottom, left, right, width, height}, scales: {x, y}} = chart;
+
+            ctx.save();
+
+            x.ticks.forEach((tick, index) => {
+                const day = new Date(tick.value).getDay();
+                if (day === 6 || day === 0) {
+                    ctx.fillStyle = pluginOptions.weekendColor;
+                    ctx.fillRect(x.getPixelForValue(tick.value), top, x.getPixelForValue(new Date(tick.value).setHours(24)) - x.getPixelForValue(tick.value), height);
+                }
+            })
+        }
+    }
+
     // config
     const config = {
         type: 'bar',
@@ -266,6 +271,9 @@
                 }
             },
             plugins: {
+                weekend: {
+                    weekendColor: 'rgba(102, 102, 102, 0.2)',
+                },
                 legend: {
                     display: false
                 },
@@ -300,6 +308,7 @@
             todayLine,
             assignedTasks,
             status,
+            weekend
         ]
     };
 
@@ -342,9 +351,10 @@
 
     function addNames() {
         const names = document.getElementById('names');
-        while(names.firstElementChild) {
+        while (names.firstElementChild) {
             names.removeChild(names.firstElementChild);
-        };
+        }
+        ;
 
         const namesArray = myChart.data.datasets[0].data.map((dataPoint) => {
             return dataPoint.name;
