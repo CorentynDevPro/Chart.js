@@ -328,11 +328,11 @@
         const teamMemberTask = document.getElementById('teamMemberTask');
         const statusTask = document.getElementById('statusTask');
 
-        myChart.data.datasets[0].data.push({
+        const arrayLength = myChart.data.datasets[0].data.length;
+        myChart.data.datasets[0].data[arrayLength] = {
             x: [startDateTask.value, endDateTask.value],
             y: nameTask.value, name: teamMemberTask.value, status: parseInt(statusTask.value)
-        });
-        console.log(myChart.data.datasets[0]);
+        };
         myChart.update();
     }
 
