@@ -167,36 +167,38 @@
             const {ctx, data, chartArea: {top, bottom, left, right}, scales: {x, y}} = chart;
             ctx.save();
 
-            ctx.beginPath();
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = 'rgba(102, 102, 102, 1)';
-            ctx.setLineDash([6, 6]);
-            ctx.moveTo(x.getPixelForValue(new Date()), top);
-            ctx.lineTo(x.getPixelForValue(new Date()), bottom);
-            ctx.stroke();
-            ctx.restore();
+            if (x.getPixelForValue(new Date()) >= left && x.getPixelForValue(new Date()) <= right) {
+                ctx.beginPath();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = 'rgba(102, 102, 102, 1)';
+                ctx.setLineDash([6, 6]);
+                ctx.moveTo(x.getPixelForValue(new Date()), top);
+                ctx.lineTo(x.getPixelForValue(new Date()), bottom);
+                ctx.stroke();
+                ctx.restore();
 
-            ctx.setLineDash([]);
+                ctx.setLineDash([]);
 
-            // Draw the pointing down arrow
-            ctx.beginPath();
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = 'rgba(102, 102, 102, 1)';
-            ctx.moveTo(x.getPixelForValue(new Date()), top + 1);
-            ctx.lineTo(x.getPixelForValue(new Date()) - 4, top - 6);
-            ctx.lineTo(x.getPixelForValue(new Date()) + 4, top - 6);
-            ctx.closePath();
-            ctx.fillStyle = 'rgba(102, 102, 102, 1)';
-            ctx.stroke();
-            ctx.fill();
-            ctx.restore();
+                // Draw the pointing down arrow
+                ctx.beginPath();
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = 'rgba(102, 102, 102, 1)';
+                ctx.moveTo(x.getPixelForValue(new Date()), top + 1);
+                ctx.lineTo(x.getPixelForValue(new Date()) - 4, top - 6);
+                ctx.lineTo(x.getPixelForValue(new Date()) + 4, top - 6);
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(102, 102, 102, 1)';
+                ctx.stroke();
+                ctx.fill();
+                ctx.restore();
 
-            // Text at the bottom dotted line
-            ctx.font = 'bolder 12px sans-serif';
-            ctx.fillStyle = 'rgba(102, 102, 102, 1)';
-            ctx.textAlign = 'center';
-            ctx.fillText('Today', x.getPixelForValue(new Date()), bottom + 13);
-            ctx.restore();
+                // Text at the bottom dotted line
+                ctx.font = 'bolder 12px sans-serif';
+                ctx.fillStyle = 'rgba(102, 102, 102, 1)';
+                ctx.textAlign = 'center';
+                ctx.fillText('Today', x.getPixelForValue(new Date()), bottom + 13);
+                ctx.restore();
+            }
         }
     }
 
