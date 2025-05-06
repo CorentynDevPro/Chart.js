@@ -13,7 +13,7 @@
 
         .chartCard {
             width: 100vw;
-            height: calc(100vh);
+            height: 100%;
             background: rgba(54, 162, 235, 0.2);
             display: flex;
             align-items: center;
@@ -22,6 +22,8 @@
 
         .chartBox {
             width: 65%;
+            height: 100%;
+            margin-top: auto;
             padding: 20px;
             border-radius: 20px;
             border: solid 3px rgba(54, 162, 235, 1);
@@ -42,7 +44,10 @@
         <br/>
         <hr/>
         <br/>
-        <input type="text" id="nameTask"/>
+        <input type="text" id="nameTask" list="tasks"/>
+        <datalist id="tasks">
+        </datalist>
+
         <input type="date" id="startDateTask"/>
         <input type="date" id="endDateTask"/>
         <input type="text" id="teamMemberTask" list="names"/>
@@ -55,6 +60,26 @@
             <option value="2">Completed</option>
         </select>
         <button onclick="addTask()">Create task</button>
+
+        <br/>
+        <br/>
+        <hr/>
+        <br/>
+
+        <select id="minTask" onchange="showTask()">
+            <option selected value="0">Task 1</option>
+            <option value="1">Task 2</option>
+            <option value="2">Task 3</option>
+            <option value="3">Task 4</option>
+        </select>
+
+        <select id="maxTask" onchange="showTask()">
+            <option value="5">Task 6</option>
+            <option value="6">Task 7</option>
+            <option value="7">Task 8</option>
+            <option selected value="8">Task 9</option>
+        </select>
+
     </div>
 </div>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
@@ -132,6 +157,12 @@
         }]
     };
 
+    const labelsArray = data.datasets[0].data.map((dataPoint, index) => {
+        return dataPoint.y;
+    })
+
+    const labelsArrayFilter = [...new Set(labelsArray)];
+
     // status plugin block
     const status = {
         id: 'status',
@@ -148,14 +179,16 @@
             ctx.textAlign = 'center';
 
             data.datasets[0].data.forEach((datapoint, index) => {
-                ctx.beginPath();
-                ctx.fillStyle = colours[datapoint.status];
-                ctx.arc(right + (paddingRight / 2), y.getPixelForValue(index), 12, 0, angle * 360, false);
-                ctx.closePath();
-                ctx.fill();
-                ctx.fillStyle = 'white';
+                if (y.getPixelForValue(index) > top && y.getPixelForValue(index) < bottom) {
+                    ctx.beginPath();
+                    ctx.fillStyle = colours[datapoint.status];
+                    ctx.arc(right + (paddingRight / 2), y.getPixelForValue(index), 12, 0, angle * 360, false);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.fillStyle = 'white';
 
-                ctx.fillText(icons[datapoint.status], right + (paddingRight / 2), y.getPixelForValue(index))
+                    ctx.fillText(icons[datapoint.status], right + (paddingRight / 2), y.getPixelForValue(index))
+                }
             })
             ctx.font = 'bolder 12px sans-serif';
             ctx.fillStyle = 'black';
@@ -218,7 +251,9 @@
             ctx.textAlign = 'left';
 
             data.datasets[0].data.forEach((datapoint, index) => {
-                ctx.fillText(datapoint.name, 10, y.getPixelForValue(index))
+                if (y.getPixelForValue(index) > top && y.getPixelForValue(index) < bottom) {
+                    ctx.fillText(datapoint.name, 10, y.getPixelForValue(index))
+                }
             })
             ctx.fillText('Names', 10, top - 15)
             ctx.restore()
@@ -268,6 +303,11 @@
                     },
                     min: '2025-05-01',
                     max: '2025-05-31',
+                },
+                y: {
+                    min: 0,
+                    max: 5,
+                    labels: labelsArrayFilter
                 }
             },
             plugins: {
@@ -354,7 +394,6 @@
         while (names.firstElementChild) {
             names.removeChild(names.firstElementChild);
         }
-        ;
 
         const namesArray = myChart.data.datasets[0].data.map((dataPoint) => {
             return dataPoint.name;
@@ -367,9 +406,36 @@
             option.value = memberName;
             names.appendChild(option);
         })
-    };
+    }
 
     addNames();
+
+    function addTasks() {
+        const tasks = document.getElementById('tasks');
+        while (tasks.firstElementChild) {
+            tasks.removeChild(tasks.firstElementChild);
+        }
+
+        labelsArrayFilter.forEach((taskItem) => {
+            const option = document.createElement('option');
+            option.value = taskItem;
+            tasks.appendChild(option);
+        })
+    }
+
+    addTasks();
+
+    function showTask() {
+        const yScale = myChart.config.options.scales.y;
+        const minTask = document.getElementById('minTask').value;
+        const maxTask = document.getElementById('maxTask').value;
+
+        yScale.min = yScale.labels[minTask];
+        yScale.max = yScale.labels[maxTask];
+
+        myChart.update();
+    }
+
     // Instantly assign Chart.js version
     const chartVersion = document.getElementById('chartVersion');
     chartVersion.innerText = Chart.version;
